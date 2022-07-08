@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image"
 	"image/png"
 	"log"
 	"math"
@@ -9,6 +10,12 @@ import (
 )
 
 func main() {
+	generateByteencodedImage("out", Example0{})
+}
+
+type Example0 struct{}
+
+func (Example0) GenerateByteplane() ([]byte, image.Point) {
 	var byteplane0 []byte
 	var byteplane1 []byte
 	count := 16384 * 32 // Now only *approximately* what you want. Rounds to nearest square with 8x8 cells n shit
@@ -63,9 +70,22 @@ func main() {
 		byteplane0[idx] ^= byteplane1[idx]
 	}
 
-	img := idago.Encode(byteplane0, w, h)
+	return byteplane0, image.Point{w, h}
+}
 
-	f, err := os.Create("out32.png")
+type byteplaneGenerator interface {
+	GenerateByteplane() ([]byte, image.Point)
+}
+
+func generateByteencodedImage(fn string, gen byteplaneGenerator) {
+	byteplane, point := gen.GenerateByteplane()
+
+	w := point.X
+	h := point.Y
+
+	img := idago.Encode(byteplane, w, h)
+
+	f, err := os.Create(fn + ".png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -79,12 +99,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	f, err = os.Create("out32.bin")
+	f, err = os.Create(fn + ".bin")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	n, err := f.Write(byteplane0)
+	n, err := f.Write(byteplane)
 	if err != nil {
 		log.Fatal(n, err)
 	}
