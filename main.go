@@ -9,8 +9,8 @@ import (
 )
 
 func main() {
-	var d []byte
-	var d2 []byte
+	var byteplane0 []byte
+	var byteplane1 []byte
 	count := 16384 * 32 // Now only *approximately* what you want. Rounds to nearest square with 8x8 cells n shit
 	var x, y int = -1, -1
 	x++
@@ -27,8 +27,8 @@ func main() {
 		y = (int(idx/w) % h)
 		x = x + (y / 4)
 		y = y + (x / 8)
-		d = append(d, byte(int(math.Abs(float64(math.Sin(float64((x/8)+y*16))*0xFF)))&0xFF))
-		d2 = append(d2, d[idx])
+		byteplane0 = append(byteplane0, byte(int(math.Abs(float64(math.Sin(float64((x/8)+y*16))*0xFF)))&0xFF))
+		byteplane1 = append(byteplane1, byteplane0[idx])
 	}
 
 	rm := 360.0
@@ -38,7 +38,7 @@ func main() {
 			y = int(math.Cos(r/rm*2.0*math.Pi)*float64(h)/j) + h/2
 			if x > 0 && y > 0 && x < w && y < h {
 				idx := (x + (y * w))
-				d[idx] = 0x00
+				byteplane0[idx] = 0x00
 			}
 		}
 	}
@@ -48,22 +48,22 @@ func main() {
 			x = int(math.Sin(r/rm*2.0*math.Pi)*float64(w)/j) + w/2
 			y = int(math.Cos(r/rm*2.0*math.Pi)*float64(h)/j) + h/2
 			idx := (x + (y * w))
-			d[idx] = 0x00
+			byteplane0[idx] = 0x00
 		}
 	}
 
 	for lx := w/2 - 20; lx < w/2+20; lx++ {
 		for ly := 0; ly < h/2+4; ly++ {
 			idx := (lx + (ly * w))
-			d[idx] = 0x00
+			byteplane0[idx] = 0x00
 		}
 	}
 
-	for idx := range d {
-		d[idx] ^= d2[idx]
+	for idx := range byteplane0 {
+		byteplane0[idx] ^= byteplane1[idx]
 	}
 
-	img := idago.Encode(d, w, h)
+	img := idago.Encode(byteplane0, w, h)
 
 	f, err := os.Create("out32.png")
 	if err != nil {
@@ -84,7 +84,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	n, err := f.Write(d)
+	n, err := f.Write(byteplane0)
 	if err != nil {
 		log.Fatal(n, err)
 	}
