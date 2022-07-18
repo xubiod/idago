@@ -26,8 +26,8 @@ func (dst *Layer) Merge(src *Layer, preference float32) error {
 		return errors.New("dumbbrain: axon count in layer mismatch, no changes done")
 	}
 
-	for intoIndex := range *dst {
-		(*dst)[intoIndex].Merge(&(*src)[intoIndex], preference)
+	for dstIndex := range *dst {
+		(*dst)[dstIndex].Merge(&(*src)[dstIndex], preference)
 	}
 
 	return nil
@@ -56,8 +56,8 @@ func (dst *DumbBrain) Merge(src *DumbBrain, preference float32) error {
 		return errors.New("dumbbrain: layer count mismatch, no changes done")
 	}
 
-	for intoIndex := range *dst {
-		(*dst)[intoIndex].Merge(&(*src)[intoIndex], preference)
+	for dstIndex := range *dst {
+		(*dst)[dstIndex].Merge(&(*src)[dstIndex], preference)
 	}
 	return nil
 }
