@@ -17,17 +17,17 @@ type Layer []Axon
 
 type DumbBrain []Layer
 
-func (into *Axon) Merge(with *Axon, preference float32) {
-	(*into).Multiplier = (((*into).Multiplier * (1 - preference)) + ((*with).Multiplier * preference))
+func (dst *Axon) Merge(src *Axon, preference float32) {
+	(*dst).Multiplier = (((*dst).Multiplier * (1 - preference)) + ((*src).Multiplier * preference))
 }
 
-func (into *Layer) Merge(with *Layer, preference float32) error {
-	if len(*into) != len(*with) {
+func (dst *Layer) Merge(src *Layer, preference float32) error {
+	if len(*dst) != len(*src) {
 		return errors.New("dumbbrain: axon count in layer mismatch, no changes done")
 	}
 
-	for intoIndex, intoAxon := range *into {
-		intoAxon.Merge(&(*with)[intoIndex], preference)
+	for intoIndex, intoAxon := range *dst {
+		intoAxon.Merge(&(*src)[intoIndex], preference)
 	}
 
 	return nil
@@ -51,13 +51,13 @@ func (network *DumbBrain) Runthrough() {
 	}
 }
 
-func (into *DumbBrain) Merge(with *DumbBrain, preference float32) error {
-	if len(*into) != len(*with) {
+func (dst *DumbBrain) Merge(src *DumbBrain, preference float32) error {
+	if len(*dst) != len(*src) {
 		return errors.New("dumbbrain: layer count mismatch, no changes done")
 	}
 
-	for intoIndex, _ := range *into {
-		(*into)[intoIndex].Merge(&(*with)[intoIndex], preference)
+	for intoIndex, _ := range *dst {
+		(*dst)[intoIndex].Merge(&(*src)[intoIndex], preference)
 	}
 	return nil
 }
