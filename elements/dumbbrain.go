@@ -71,7 +71,7 @@ func Stork(templateStructure []int, axonMin float32, axonMax float32, into *[]*D
 			return fmt.Errorf("dumbbrain/stork: refusal to change non-nil network at index %d", index)
 		}
 
-		(*into)[index] = &DumbBrain{new([]*Layer)}
+		(*into)[index] = new(DumbBrain)
 
 	}
 
