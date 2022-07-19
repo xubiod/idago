@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	generateByteencodedImage("out", Example0{})
+	// generateByteencodedImage("out", Example0{})
 }
 
 type Example0 struct{}
