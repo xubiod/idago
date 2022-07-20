@@ -2,7 +2,7 @@ package idago
 
 import (
 	"errors"
-	"fmt"
+	"math/rand"
 )
 
 // Note absolutely no experience with neural networks or machine learning has
@@ -65,14 +65,19 @@ func (dst *DumbBrain) Merge(src *DumbBrain, preference float32) error {
 	return nil
 }
 
-func Stork(templateStructure []int, axonMin float32, axonMax float32, into *[]*DumbBrain) error {
-	for index := range *into {
-		if (*into)[index] != nil {
-			return fmt.Errorf("dumbbrain/stork: refusal to change non-nil network at index %d", index)
+func Stork(templateStructure []int, axonMin float32, axonMax float32, into *DumbBrain) error {
+	if *into != nil {
+		return errors.New("dumbbrain/stork: refusal to change non-nil network")
+	}
+
+	*into = DumbBrain(make([]*Layer, len(templateStructure)))
+
+	for layerIndex := range *into {
+		*(*into)[layerIndex] = Layer(make([]*Axon, templateStructure[layerIndex]))
+
+		for axonIndex := range *(*into)[layerIndex] {
+			(*(*into)[layerIndex])[axonIndex].Multiplier = (rand.Float32() * (axonMax - axonMin)) + axonMin
 		}
-
-		(*into)[index] = new(DumbBrain)
-
 	}
 
 	return nil
