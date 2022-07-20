@@ -2,6 +2,7 @@ package idago
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 )
 
@@ -77,6 +78,22 @@ func Stork(templateStructure []int, axonMin float32, axonMax float32, into *Dumb
 
 		for axonIndex := range *(*into)[layerIndex] {
 			(*(*into)[layerIndex])[axonIndex].Multiplier = (rand.Float32() * (axonMax - axonMin)) + axonMin
+		}
+	}
+
+	return nil
+}
+
+func StorkMany(templateStructure []int, axonMin float32, axonMax float32, into *[]*DumbBrain) error {
+	if len(*into) <= 0 {
+		return errors.New("dumbbrain/storks: into is empty")
+	}
+
+	var result error
+	for networkIndex := range *into {
+		result = Stork(templateStructure, axonMin, axonMax, (*into)[networkIndex])
+		if result != nil {
+			return fmt.Errorf("dumbbrain/storks: issue at index %d:\n\t%s", networkIndex, result.Error())
 		}
 	}
 
